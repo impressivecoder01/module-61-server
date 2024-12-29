@@ -58,6 +58,14 @@ async function run() {
                 secure: false
             })
             .send({success: true})
+            app.post('/logout', (req, res)=> {
+                res
+                .clearCookie('token', {
+                    httpOnly: true,
+                    secure: false
+                })
+                .send({success: true})
+            })
         })
 
         // jobs related APIs
