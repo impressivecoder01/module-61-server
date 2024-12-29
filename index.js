@@ -9,7 +9,17 @@ const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // middleware
-app.use(cors());
+app.use(cors(
+    {
+        origin: [
+            'http://localhost:5173',
+            // "https://job-portal-userrr.web.app",
+            // 'https://job-portal-userrr.firebaseapp.com'
+        ], //use your live links. Initially you can only keep http://localhost:5173 this URL.
+        credentials: true,
+        optionsSuccessStatus: 200  //optional
+    }
+));
 app.use(express.json());
 app.use(cookieParser())
 
