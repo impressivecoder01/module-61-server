@@ -23,6 +23,26 @@ app.use(cors(
 app.use(express.json());
 app.use(cookieParser())
 
+const verifyToken = (req, res, next) => {
+    const token = req.cookies?.token;
+    // console.log('token inside the verifyToken', token);
+
+    if (!token) {
+        return res.status(401).send({ message: 'Unauthorized access' })
+    }
+
+    //verify the token
+    //Make sure ACCESS_TOKEN_SECRET is also added to your .env file
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: 'Token verification failed: ' + err.message })
+        }
+        // if there is no error,
+        req.user = decoded;
+        next();
+    })
+}
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.h77hn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -96,9 +116,10 @@ async function run() {
 
         // job application apis
         // get all data, get one data, get some data [o, 1, many]
-        app.get('/job-application', async (req, res) => {
+        app.get('/job-application',verifyToken , async (req, res) => {
             const email = req.query.email;
             const query = { applicant_email: email }
+            console.log(req.cookies)
             const result = await jobApplicationCollection.find(query).toArray();
 
             // fokira way to aggregate data
